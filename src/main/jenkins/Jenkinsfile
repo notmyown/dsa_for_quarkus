@@ -1,0 +1,44 @@
+@Library('eckitDefault') _
+
+pipeline {
+    
+	agent any
+
+	environment {
+        dockerDir   = "./src/main/docker"
+   	}
+
+
+	options {
+		disableConcurrentBuilds()
+        buildDiscarder(logRotator(numToKeepStr: '2'))
+	}
+
+	stages {
+	    stage("Checkout") {
+	        steps {
+	            deleteDir()
+                gitea (repo: "EAPM/eapm-timeboxing")
+	        }
+	    }
+	    stage("Build") {
+	        steps {
+	            //switch from local dev to prod
+                sh "chmod +x ./gradlew"
+                sh "./gradlew assemble"
+	        }
+	    }
+	    stage('Building ContainerImages') {
+	        steps {
+	            withDockerLogin {
+	                // ---------------------------------------------------- Backend --------------------------------------------------------------------
+	                dir(".") {
+	                    sh "docker build -t docker.dev.eckcellent-it.de/eckit/projects/eapm/timebox -f ${dockerDir}/Dockerfile.jvm ./"
+	                    sh "docker push docker.dev.eckcellent-it.de/eckit/projects/eapm/timebox"
+	                }
+	            }
+	        }
+	    }
+
+	}
+}

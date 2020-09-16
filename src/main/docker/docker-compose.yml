@@ -1,0 +1,28 @@
+---
+version: '3.5'
+services:
+
+  timebox:
+    image: docker.dev.eckcellent-it.de/eckit/projects/eapm/timebox
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 3
+        window: 120s
+      labels:
+        - "traefik.enable=true"
+        - "traefik.port=8080"
+        - "traefik.backend=timebox"
+        - "traefik.docker.network=webgateway"
+        - "traefik.main.frontend.rule=Host:timebox.dev.eckcellent-it.de"
+    volumes:
+      - /data/swarm/DEV/eapm-timebox-data:/deployments/data
+    networks:
+      - timebox
+      - webgateway
+
+networks:
+  timebox:
+  webgateway:
+    external: true

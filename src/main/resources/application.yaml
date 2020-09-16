@@ -1,0 +1,15 @@
+quarkus:
+  http:
+    port: 8080
+  datasource:
+    url: jdbc:h2:./database/dsa_db
+    driver: org.h2.Driver
+    username: sa
+    password: sa
+    min-size: 3
+    max-size: 13
+  hibernate-orm:
+    database:
+      generation: update
+  websocket:
+     dispatch-to-worker: true

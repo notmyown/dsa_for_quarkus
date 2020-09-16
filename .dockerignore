@@ -1,0 +1,7 @@
+*
+!src
+!database
+!images
+!build/*-runner
+!build/*-runner.jar
+!build/lib/*
