@@ -3,7 +3,10 @@ package de.nmo.dsa.roller.rest.controller;
 import de.nmo.dsa.roller.chat.ChatSocket;
 import de.nmo.dsa.roller.chat.Roller;
 import de.nmo.dsa.roller.entity.ChatMessage;
+import de.nmo.dsa.roller.entity.Session;
+import de.nmo.dsa.roller.entity.User;
 import de.nmo.dsa.roller.error.GenericException;
+import de.nmo.dsa.roller.error.InvalidUserException;
 import de.nmo.dsa.roller.rest.dao.ChatMessageListDAO;
 import de.nmo.dsa.roller.services.ChatMessageService;
 
@@ -30,6 +33,9 @@ public class ChatEndpoint {
     @Inject
     ChatMessageService chatmessageService;
 
+    @Inject
+    UserEndpoint userEndpoint;
+
     @GET
     @Path("room/{room}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -43,27 +49,28 @@ public class ChatEndpoint {
         } catch (Exception e) {
             throw new GenericException("Error getting User list", e);
         }
-
     }
 
     @POST
     @Path("send")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response send(@QueryParam("name") String name, @QueryParam("msg") String msg) throws GenericException {
+    public Response send(@QueryParam("token") String token, @QueryParam("msg") String msg) throws GenericException {
         try {
-            String message = roller.getMessage(msg, name);
+            User user = userEndpoint.getUser(token);
+            String message = roller.getMessage(msg, token);
             ChatMessage cm = new ChatMessage();
             cm.setMessage(message);
             cm.setRoom("HavenaChronicles");
             cm.setTime(System.currentTimeMillis());
             System.out.println(cm);
             chatmessageService.create(cm);
-            chatSocket.onMessage(message, name);
+            chatSocket.onMessage(message, user.getName());
             return Response.status(200)
                     .entity("").build();
         } catch (Exception e) {
-            throw new GenericException("Error creating Meeting", e);
+            throw new GenericException("Error sending: " + e.getMessage(), e);
         }
     }
+
 
 }

@@ -1,7 +1,10 @@
 package de.nmo.dsa.roller.chat;
 
+import de.nmo.dsa.roller.entity.Skill;
 import de.nmo.dsa.roller.entity.SkillToUser;
 import de.nmo.dsa.roller.entity.User;
+import de.nmo.dsa.roller.error.GenericException;
+import de.nmo.dsa.roller.rest.controller.UserEndpoint;
 import de.nmo.dsa.roller.services.SessionService;
 import de.nmo.dsa.roller.services.SkillService;
 import de.nmo.dsa.roller.services.SkillToUserService;
@@ -30,37 +33,37 @@ public class Roller {
     @Inject
     private SkillToUserService skillToUserService;
 
-    public String getMessage(String message, String username) {
-        String roll = checkRoll(message, username);
+    @Inject
+    UserEndpoint userEndpoint;
+
+    public String getMessage(String message, String token)  throws GenericException {
+        String roll = checkRoll(message, token);
         return roll;
     }
 
-    private String checkRoll(String msg, String username) {
+    private String checkRoll(String msg, String token) throws GenericException {
         if (msg == null) {
             return null;
         }
+        User user = userEndpoint.getUser(token);
         if (msg.startsWith("==roll")) {
-            System.out.println("das hier?");
-            System.out.println(userService);
-            User user = userService.getByName(username);
-            System.out.println(user);
             String content = msg.split("_")[1];
             String[] parts = content.split("-");
-            System.out.println(parts[0] + " - " + parts[1]);
             if (parts[0].equals("attr")) {
                 String attr = parts[1];
                 int rand20 = new Random().nextInt(20) + 1;
                 long val = getAttrValue(user, attr);
                 String retval = "Roll " + attr.toUpperCase() + "(" + val + ") with D20: " + rand20 + (val < rand20 ? " (failed)" : "");
-                return "<span class='username'>" + username + "</span><span class='message dsa_roll_text" + (val < rand20 ? " failed" : "") +"'>" + retval + "</span>";
+                return "<span class='username'>" + user.getUsername() + "</span><span class='message dsa_roll_text" + (val < rand20 ? " failed" : "") +"'>" + retval + "</span>";
             } else if (parts[0].equals("skill")) {
                 int id = Integer.parseInt(parts[1]);
                 List<SkillToUser> sus = skillToUserService.allByUser(user);
                 sus = sus.stream().filter(su -> su.getSkill() == id).collect(Collectors.toList()); ;
                 if (sus.size() == 1) {
                     long qsLeft = sus.get(0).getValue();
-                    String name = skillService.get(sus.get(0).getId()).getName();
-                    String attr = skillService.get(sus.get(0).getId()).getAttributes();
+                    Skill skill = skillService.get(sus.get(0).getSkill());
+                    String name = skill.getName();
+                    String attr = skill.getAttributes();
                     String[] attrs = attr.split("/");
                     String retval = "Roll '" + name + "(" + qsLeft + ")': ";
                     int mod = 0;
@@ -75,12 +78,12 @@ public class Roller {
                     }
                     int qs = getQS(qsLeft);
                     retval += qsLeft >= 0 ? (" -> FP: " + qsLeft + " = QS:" + qs) : " failed";
-                    return "<span class='username'>" + username + "</span><span class='message dsa_roll_text" + (qsLeft >= 0 ? "" : " failed") +"'>" + retval + "</span>";
+                    return "<span class='username'>" + user.getUsername() + "</span><span class='message dsa_roll_text" + (qsLeft >= 0 ? "" : " failed") +"'>" + retval + "</span>";
                 }
             }
         } else {
             msg = msg.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
-            return "<span class='username'>" + username + "</span><span class='message'>" + msg + "</span>";
+            return "<span class='username'>" + user.getUsername() + "</span><span class='message'>" + msg + "</span>";
         }
         return null;
     }

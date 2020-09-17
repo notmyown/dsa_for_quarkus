@@ -76,6 +76,59 @@ TR.skill {
     color: #dadada;
 }
 
+.dsa .char .userinfos .username {
+     margin-left: 15px;
+     font-size: 2em;
+     font-weight: bold;
+ }
+
+input:read-only {
+  width: 40px;
+  border: none;
+  background: transparent;
+  color: inherit;
+  margin: 0;
+  -moz-appearance: textfield;
+  -webkit-appearance: textfield;
+  cursor: default;
+}
+
+input.dsa_attr_input:read-only {
+    text-align: center;
+    font-weight: bold;
+    font-size: 1.5em;
+}
+
+.username[contenteditable="true"] {
+    background: white;
+    color: black;
+}
+
+ .dsa .char .userinfos .button {
+    float: right;
+    width: 2em;
+    height: 2em;
+    cursor: pointer;
+    background-size: 100%;
+    margin-right: 10px;
+ }
+
+ .dsa .char .userinfos .edit {
+    background-image: url('edit.png');
+ }
+
+  .dsa .char .userinfos .save {
+      background-image: url('save.png');
+      display: none;
+  }
+
+.dsa.editable .char .userinfos .edit {
+    display: none;
+}
+.dsa.editable .char .userinfos .save {
+    display: inline;
+}
+
 .dsa .chat>DIV {
     background-image: url(background.jpg);
     background-repeat: no-repeat;

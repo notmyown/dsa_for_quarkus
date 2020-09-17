@@ -58,6 +58,7 @@ public class UserService implements DataService<User> {
 	public boolean update(long id, User u) {
 		User entity = entityManager.find(User.class, u.getId());
 		entity.setName(u.getName());
+		entity.setUsername(u.getUsername());
 		entity.setAttr_mu(u.getAttr_mu());
 		entity.setAttr_ch(u.getAttr_ch());
 		entity.setAttr_ko(u.getAttr_ko());

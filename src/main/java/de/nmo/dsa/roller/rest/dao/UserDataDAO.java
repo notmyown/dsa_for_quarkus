@@ -5,6 +5,7 @@ import de.nmo.dsa.roller.entity.User;
 public class UserDataDAO {
 
     private String name;
+    private  String username;
 
     private boolean admin;
 
@@ -22,6 +23,7 @@ public class UserDataDAO {
 
     public UserDataDAO(User u) {
         name = u.getName();
+        username = u.getUsername();
         admin = u.isAdmin();
         attr_mu = u.getAttr_mu();
         attr_kl = u.getAttr_kl();
@@ -111,6 +113,14 @@ public class UserDataDAO {
 
     public void setAttr_kk(long attr_kk) {
         this.attr_kk = attr_kk;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 }
 

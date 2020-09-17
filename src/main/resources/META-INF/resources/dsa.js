@@ -116,7 +116,9 @@ $.fn.dsa = function() {
 
     fillHTML = function() {
         console.log(inst.user['attr_ff']);
-        var out = "<div class='char'><table>" +
+        var out = "<div class='char'>";
+        out += "<div class='userinfos'><span class='username'>" + inst.user.username + "</span><span class='button edit'></span><span class='button save'></span></div>";
+        out += "<table>" +
                     "<tr class='dsa_color_val'>";
         for(var i = 0; i < attributes.length; i++) {
             out += "<td class='dsa_" + attributes[i].toLowerCase() + "'><span class='dsa_attr'>" + attributes[i] + "</span></td>";
@@ -192,6 +194,27 @@ $.fn.dsa = function() {
               updateAttr(id, val);
           });
 
+        inst.find("INPUT").attr("readonly", "true");
+        inst.find(".char .userinfos .edit").click(function(e){
+            inst.find("INPUT").removeAttr("readonly");
+            inst.find(".char .userinfos .username").attr("contenteditable", "true");
+            inst.addClass("editable");
+        });
+        inst.find(".char .userinfos .save").click(function(e){
+            inst.find("INPUT").attr("readonly", "true");
+            inst.find(".char .userinfos .username").removeAttr("contenteditable");
+            inst.removeClass("editable");
+            updateUser();
+        });
+
+    }
+
+    updateUser = function() {
+        var username = inst.find(".char .userinfos .username").text();
+        $.ajax({
+              type: "POST",
+              url: '/dsa/user/user/' + inst.token + "?username=" + username,
+        });
     }
 
     updateSkill = function(id, val) {
@@ -224,8 +247,15 @@ $.fn.dsa = function() {
                   type: "GET",
                   url: '/dsa/chat/room/HavenaChronicles',
                   success: function(data) {
+                    var lastuser = "";
                     for (var i = 0; i < data.length; i++) {
-                        $(".messages").append(data[i].msg).append("<br/>");
+                        var msg = data[i].msg;
+                        if (msg && msg.includes("<span class='username'>" + lastuser + "</span>")) {
+                            msg = msg.replace("<span class='username'>" + lastuser + "</span>", "");
+                        }else {
+                            lastuser = msg.split("</span>")[0].split(">")[1];
+                        }
+                        $(".messages").append(msg).append("<br/>");
                     }
                     scrollToBottom();
                   }
@@ -237,7 +267,7 @@ $.fn.dsa = function() {
                     sendMessage2();
                  }
                });
-               $("#send").click(sendMessage);
+               $("#send").click(sendMessage2);
            };
            socket.onmessage =function(m) {
                console.log("Got message: " + m.data);
@@ -263,7 +293,7 @@ $.fn.dsa = function() {
               console.log("Sending " + value);
               $.ajax({
                   type: "POST",
-                  url: '/dsa/chat/send?name='+inst.user.name+"&msg="+ encodeURIComponent(value),
+                  url: '/dsa/chat/send?token='+inst.token+"&msg="+ encodeURIComponent(value),
               });
           }
       };

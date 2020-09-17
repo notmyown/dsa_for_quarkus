@@ -24,6 +24,7 @@ public class User {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private long id;
 	private String name;
+	private String username;
 	private String password;
 
 	private boolean admin;
@@ -137,12 +138,20 @@ public class User {
 		this.attr_kk = attr_kk;
 	}
 
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
 	@Override
 	public String toString() {
 		return "User{" +
 				"id=" + id +
 				", name='" + name + '\'' +
-				", password='" + password + '\'' +
+				", username='" + username + '\'' +
 				", admin=" + admin +
 				", attr_mu=" + attr_mu +
 				", attr_kl=" + attr_kl +

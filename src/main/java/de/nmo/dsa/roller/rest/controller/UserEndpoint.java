@@ -73,6 +73,7 @@ public class UserEndpoint {
         try {
             final User u = new User();
             u.setName(name);
+            u.setUsername(name);
             u.setAdmin(false);
             u.setPassword(password);
             userService.create(u);
@@ -191,6 +192,17 @@ public class UserEndpoint {
     }
 
     @POST
+    @Path("user/{token}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response updateUser(@PathParam("token") String token, @QueryParam("username") String username) throws GenericException {
+        User u = getUser(token);
+        u.setUsername(username);
+        userService.update(u.getId(), u);
+        return Response.status(200)
+                .entity(new UserDataDAO(u)).build();
+    }
+
+    @POST
     @Path("skill/{token}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateSkill(@PathParam("token") String token, @QueryParam("skill") long skill, @QueryParam("value") long value) throws GenericException {
@@ -267,7 +279,7 @@ public class UserEndpoint {
         return get(token);
     }
 
-    private User getUser(String token) throws InvalidUserException {
+    public User getUser(String token) throws InvalidUserException {
         Session s = sessionService.getByToken(token);
         if (s == null || s.getUser() == 0) {
             throw new InvalidUserException("No actrive Session for token");
@@ -280,4 +292,6 @@ public class UserEndpoint {
         }
         return u;
     }
+
+
 }
