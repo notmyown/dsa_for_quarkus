@@ -54,11 +54,12 @@ public class Roller {
                 int rand20 = new Random().nextInt(20) + 1;
                 long val = getAttrValue(user, attr);
                 String retval = "Roll " + attr.toUpperCase() + "(" + val + ") with D20: " + rand20 + (val < rand20 ? " (failed)" : "");
-                return "<span class='username'>" + user.getUsername() + "</span><span class='message dsa_roll_text" + (val < rand20 ? " failed" : "") +"'>" + retval + "</span>";
+                return "<span class='username'>" + user.getUsername() + "</span><span class='message dsa_roll_text" + (val < rand20 ? " failed" : "") + "'>" + retval + "</span>";
             } else if (parts[0].equals("skill")) {
                 int id = Integer.parseInt(parts[1]);
                 List<SkillToUser> sus = skillToUserService.allByUser(user);
-                sus = sus.stream().filter(su -> su.getSkill() == id).collect(Collectors.toList()); ;
+                sus = sus.stream().filter(su -> su.getSkill() == id).collect(Collectors.toList());
+                ;
                 if (sus.size() == 1) {
                     long qsLeft = sus.get(0).getValue();
                     Skill skill = skillService.get(sus.get(0).getSkill());
@@ -67,20 +68,29 @@ public class Roller {
                     String[] attrs = attr.split("/");
                     String retval = "Roll '" + name + "(" + qsLeft + ")': ";
                     int mod = 0;
-                    for (int i=0; i < attrs.length; i++) {
-                        long val = getAttrValue(user,attrs[i]);
+                    for (int i = 0; i < attrs.length; i++) {
+                        long val = getAttrValue(user, attrs[i]);
                         int r = new Random().nextInt(20) + 1;
-                        retval += attrs[i].toUpperCase() + "(" + r + "/" + val + (mod != 0 ? " [Mod:" + mod + "]": "") + "), ";
-                        val = val+mod;
+                        retval += attrs[i].toUpperCase() + "(" + r + "/" + val + (mod != 0 ? " [Mod:" + mod + "]" : "") + "), ";
+                        val = val + mod;
                         if (r > val) {
-                            qsLeft -= (r-val);
+                            qsLeft -= (r - val);
                         }
                     }
                     int qs = getQS(qsLeft);
                     retval += qsLeft >= 0 ? (" -> FP: " + qsLeft + " = QS:" + qs) : " failed";
-                    return "<span class='username'>" + user.getUsername() + "</span><span class='message dsa_roll_text" + (qsLeft >= 0 ? "" : " failed") +"'>" + retval + "</span>";
+                    return "<span class='username'>" + user.getUsername() + "</span><span class='message dsa_roll_text" + (qsLeft >= 0 ? "" : " failed") + "'>" + retval + "</span>";
                 }
+            } else if (parts[0].equals("d")) {
+                int d = Integer.parseInt(parts[1]);
+                int r = new Random().nextInt(d) + 1;
+                String retval = "Roll D" + d + " : " + r;
+                return "<span class='username'>" + user.getUsername() + "</span><span class='message dsa_roll_text fate d" + d + "'>" + retval + "</span>";
             }
+        } else if(msg.startsWith("img::")) {
+            msg = msg.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+            String content = msg.split("::")[1];
+            return "<span class='username'>" + user.getUsername() + "</span><span class='message'><img src='" + content + "' /></span>";
         } else {
             msg = msg.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
             return "<span class='username'>" + user.getUsername() + "</span><span class='message'>" + msg + "</span>";

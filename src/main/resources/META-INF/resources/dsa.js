@@ -156,7 +156,7 @@ $.fn.dsa = function() {
          out += "<div class='messages'></div>";
          out += "<div class='msg'>";
          out += "<span id='msg' contenteditable='true' placeholder='enter your message'></span>";
-         out += "<button id='send' type='button' disabled>send</button></div>";
+         out += "<span id='send' type='button'></span><span class='sendbutton d6'></span><span class='sendbutton d8'></span><span class='sendbutton d10'></span><span class='sendbutton d12'></span><span class='sendbutton d20'></span></div>";
          out += "</div></div>";
          out += "<div class='logout'>logout</div>";
          inst.append(out);
@@ -206,6 +206,11 @@ $.fn.dsa = function() {
             inst.removeClass("editable");
             updateUser();
         });
+        inst.find(".msg .sendbutton").click(function(e){
+                    var val = 20;
+                    val = $(this).attr("class").split(" d")[1];
+                    rollDice(val);
+                });
 
     }
 
@@ -215,6 +220,10 @@ $.fn.dsa = function() {
               type: "POST",
               url: '/dsa/user/user/' + inst.token + "?username=" + username,
         });
+    }
+
+    rollDice = function(dice) {
+            sendMessage1("==roll_d-" + dice);
     }
 
     updateSkill = function(id, val) {

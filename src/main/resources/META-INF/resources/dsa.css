@@ -175,8 +175,29 @@ input.dsa_attr_input:read-only {
 
 .dsa_roll_text {color: green;}
 .dsa_roll_text.failed {color: red;}
+.dsa_roll_text {color: green;}
+.dsa_roll_text.fate {color: orange;}
+.dsa_roll_text.d6::before { content: url(d6.png); }
 .dsa_attributes TD INPUT.custom_skill_name, .dsa_attributes TD INPUT.custom_skill_attr {width: auto;}
 .dsa_roll_text::before { content: url(d20.png); vertical-align: -33%; padding-right: 5px;}
+.dsa .sendbutton, #send {
+    height: 24px;
+    width: 24px;
+    background-size: 100%, 100%;
+    display: inline-block;
+    cursor: pointer;
+    margin-left: 5px;
+}
+.dsa .sendbutton.d20 {background-image: url(d20.png);}
+.dsa .sendbutton.d6 {background-image: url(d6.png);}
+.dsa .sendbutton.d8 {background-image: url(d8.png);}
+.dsa .sendbutton.d10 {background-image: url(d10.png);}
+.dsa .sendbutton.d12 {background-image: url(d12.png);}
+.dsa #send {background-image: url(send.png); margin-right: 50px;}
+
+.dsa span.message img {
+    max-width: 85%;
+}
 
 .loginform {
     background-image: url(background2.jpg);
