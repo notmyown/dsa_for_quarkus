@@ -27,7 +27,7 @@ html, body {
 }
 
 .dsa .chat {
-    width: 70%;
+    width: 55%;
     height: 100%;
     float: left;
     position: relative;
@@ -221,4 +221,23 @@ justify-content: center;
 
 .loginform > DIV > DIV{
 
+}
+
+.dsa .users {
+    width: 15%;
+    background-color: #ffffff24;
+    border: 1px solid yellow;
+    padding: 10px;
+}
+
+.dsa .users .userlisthead {
+    font-size: 1.5em;
+    color: yellow;
+    border-bottom: 1px solid yellow;
+    margin-bottom: 20px;
+}
+
+.dsa .userlist .user {
+    color: orange;
+    display: block;
 }

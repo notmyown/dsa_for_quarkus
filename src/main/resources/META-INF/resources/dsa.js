@@ -159,6 +159,7 @@ $.fn.dsa = function() {
          out += "<span id='send' type='button'></span><span class='sendbutton d6'></span><span class='sendbutton d8'></span><span class='sendbutton d10'></span><span class='sendbutton d12'></span><span class='sendbutton d20'></span></div>";
          out += "</div></div>";
          out += "<div class='logout'>logout</div>";
+         out += "<div class='users'><div class='userlisthead'>Spieler in diesem Raum</div><div class='userlist'></div></div>";
          inst.append(out);
     }
 
@@ -211,7 +212,41 @@ $.fn.dsa = function() {
                     val = $(this).attr("class").split(" d")[1];
                     rollDice(val);
                 });
+        refreshUserList();
+        window.setInterval(function() {
+            refreshUserList();
+        }, 5000)
 
+    }
+
+    refreshUserList = function () {
+        $.ajax({
+          type: "GET",
+          url: '/dsa/user/room/HavenaChronicles',
+          success: function(data) {
+            var lastuser = "";
+            for (var i = 0; i < data.length; i++) {
+                var user = data[i];
+                var msg = "<span class='user' id='user_" + user.id +"'>" + user.username + "</span>";
+                if(inst.find("#user_" + user.id).length == 0) {
+                    inst.find(".users .userlist").append(msg);
+                }
+            }
+            inst.find(".users .userlist .user").each(function(){
+                var id = $(this).attr("id").split("_")[1];
+                var found = false;
+                for (var i = 0; i < data.length; i++) {
+                    if (id == data[i].id) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    $(this).remove();
+                }
+            });
+          }
+       });
     }
 
     updateUser = function() {

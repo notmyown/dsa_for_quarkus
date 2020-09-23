@@ -1,5 +1,7 @@
 package de.nmo.dsa.roller.chat;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -52,6 +54,12 @@ public class ChatSocket {
                 }
             });
         });
+    }
+
+    public List<String> getSessionUserNames() {
+        List<String> users = new ArrayList<>();
+        users.addAll(sessions.keySet());
+        return users;
     }
 
 }

@@ -8,13 +8,16 @@ import de.nmo.dsa.roller.entity.User;
 import de.nmo.dsa.roller.error.GenericException;
 import de.nmo.dsa.roller.error.InvalidUserException;
 import de.nmo.dsa.roller.rest.dao.ChatMessageListDAO;
+import de.nmo.dsa.roller.rest.dao.UserListDAO;
 import de.nmo.dsa.roller.services.ChatMessageService;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.persistence.NoResultException;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -71,6 +74,5 @@ public class ChatEndpoint {
             throw new GenericException("Error sending: " + e.getMessage(), e);
         }
     }
-
 
 }

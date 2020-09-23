@@ -1,5 +1,6 @@
 package de.nmo.dsa.roller.rest.controller;
 
+import de.nmo.dsa.roller.chat.ChatSocket;
 import de.nmo.dsa.roller.config.Configuration;
 import de.nmo.dsa.roller.entity.Session;
 import de.nmo.dsa.roller.entity.Skill;
@@ -19,6 +20,7 @@ import de.nmo.dsa.roller.services.UserService;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.persistence.NoResultException;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -51,6 +53,9 @@ public class UserEndpoint {
     @Inject
     private SkillToUserService skillToUserService;
 
+    @Inject
+    private ChatSocket chatSocket;
+
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response list() throws GenericException {
@@ -64,6 +69,30 @@ public class UserEndpoint {
             throw new GenericException("Error getting User list", e);
         }
 
+    }
+
+    @GET
+    @Path("room/{room}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response listbyroom(@PathParam("room") String room) throws GenericException {
+        try {
+            List<String> usernames = chatSocket.getSessionUserNames();
+            List<UserListDAO> users = new ArrayList<>();
+            for (String name : usernames) {
+                try {
+                    User u = userService.getByName(name);
+                    if (u != null) {
+                        users.add(new UserListDAO(u));
+                    }
+                } catch (NoResultException nre) {
+                    continue;
+                }
+            }
+            return Response.status(200)
+                    .entity(users).build();
+        } catch (Exception e) {
+            throw new GenericException("Error getting User list", e);
+        }
     }
 
     @POST
@@ -292,6 +321,8 @@ public class UserEndpoint {
         }
         return u;
     }
+
+
 
 
 }
