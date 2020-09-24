@@ -2,8 +2,10 @@ package de.nmo.dsa.roller.rest.controller;
 
 import de.nmo.dsa.roller.config.Configuration;
 import de.nmo.dsa.roller.entity.Skill;
+import de.nmo.dsa.roller.entity.User;
 import de.nmo.dsa.roller.error.GenericException;
 import de.nmo.dsa.roller.rest.dao.SkillListDAO;
+import de.nmo.dsa.roller.rest.dao.UserPwdDAO;
 import de.nmo.dsa.roller.services.SessionService;
 import de.nmo.dsa.roller.services.SkillService;
 import de.nmo.dsa.roller.services.SkillToUserService;
@@ -137,6 +139,23 @@ public class InitEndpoint {
             throw new GenericException("Error getting User list", e);
         }
     }
+    @GET
+    @Path("pwd")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response pwd() throws GenericException {
+        try {
+            List<User> users = userService.all();
+            List<UserPwdDAO> responses = users.stream().map(UserPwdDAO::new)
+                    .collect(Collectors.toList());
+            return Response.status(200)
+                    .entity(responses).build();
+        } catch (Exception e) {
+            throw new GenericException("Error getting User list", e);
+        }
+    }
+
+
+
 
 
 
