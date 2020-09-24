@@ -68,6 +68,8 @@ public class UserService implements DataService<User> {
 		entity.setAttr_in(u.getAttr_in());
 		entity.setAttr_ff(u.getAttr_ff());
 		entity.setAdmin(u.isAdmin());
+		System.err.println(entity.getMod());
+		entity.setMod(u.getMod());
 		entityManager.persist(entity);
 		return true;
 	}

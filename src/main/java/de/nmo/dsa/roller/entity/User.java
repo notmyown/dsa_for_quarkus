@@ -26,6 +26,7 @@ public class User {
 	private String name;
 	private String username;
 	private String password;
+	private long mod;
 
 	private boolean admin;
 
@@ -146,12 +147,21 @@ public class User {
 		this.username = username;
 	}
 
+	public long getMod() {
+		return mod;
+	}
+
+	public void setMod(long mod) {
+		this.mod = mod;
+	}
+
 	@Override
 	public String toString() {
 		return "User{" +
 				"id=" + id +
 				", name='" + name + '\'' +
 				", username='" + username + '\'' +
+				", mod=" + mod +
 				", admin=" + admin +
 				", attr_mu=" + attr_mu +
 				", attr_kl=" + attr_kl +

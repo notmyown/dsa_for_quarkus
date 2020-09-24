@@ -4,10 +4,13 @@ import de.nmo.dsa.roller.entity.User;
 
 public class UserDataDAO {
 
+    private long id;
     private String name;
     private  String username;
 
     private boolean admin;
+
+    private long mod;
 
     private long attr_mu;
     private long attr_kl;
@@ -22,6 +25,7 @@ public class UserDataDAO {
     }
 
     public UserDataDAO(User u) {
+        id = u.getId();
         name = u.getName();
         username = u.getUsername();
         admin = u.isAdmin();
@@ -33,6 +37,7 @@ public class UserDataDAO {
         attr_ge = u.getAttr_ge();
         attr_ko = u.getAttr_ko();
         attr_kk = u.getAttr_kk();
+        mod = u.getMod();
     }
 
     public String getName() {
@@ -121,6 +126,22 @@ public class UserDataDAO {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public long getMod() {
+        return mod;
+    }
+
+    public void setMod(long mod) {
+        this.mod = mod;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 }
 

@@ -13,6 +13,8 @@ $.fn.dsa = function() {
     var connected = false;
     var socket;
 
+    var contextopen = false;
+
 
     var blink = {
         Vars:{
@@ -118,6 +120,7 @@ $.fn.dsa = function() {
         console.log(inst.user['attr_ff']);
         var out = "<div class='char'>";
         out += "<div class='userinfos'><span class='username'>" + inst.user.username + "</span><span class='button edit'></span><span class='button save'></span></div>";
+        out += "<div class='modtext'>Modifikator: " + inst.user.mod + "</div>"
         out += "<table>" +
                     "<tr class='dsa_color_val'>";
         for(var i = 0; i < attributes.length; i++) {
@@ -212,14 +215,18 @@ $.fn.dsa = function() {
                     val = $(this).attr("class").split(" d")[1];
                     rollDice(val);
                 });
+
         refreshUserList();
         window.setInterval(function() {
             refreshUserList();
-        }, 5000)
+        }, 5000);
 
     }
 
     refreshUserList = function () {
+        if (inst.contextopen) {
+            return;
+        }
         $.ajax({
           type: "GET",
           url: '/dsa/user/room/HavenaChronicles',
@@ -227,9 +234,16 @@ $.fn.dsa = function() {
             var lastuser = "";
             for (var i = 0; i < data.length; i++) {
                 var user = data[i];
+                if(user.id == inst.user.id && user.mod != inst.user.mod) {
+                    refreshMod(user.mod);
+                }
                 var msg = "<span class='user' id='user_" + user.id +"'>" + user.username + "</span>";
                 if(inst.find("#user_" + user.id).length == 0) {
                     inst.find(".users .userlist").append(msg);
+                    if (inst.user.admin) {
+                        var elem = inst.find("#user_" + user.id);
+
+                    }
                 }
             }
             inst.find(".users .userlist .user").each(function(){
@@ -245,8 +259,34 @@ $.fn.dsa = function() {
                     $(this).remove();
                 }
             });
+            $("#context-menu").kendoContextMenu({
+                target: ".userlist .user",
+                direction: "top",
+                select: function(e) {
+                    console.log("klick" + e);
+                    setMod(e);
+                },
+                open: function() {
+                    inst.contextopen = true;
+                },
+                close: function() {
+                    inst.contextopen = false;
+                }
+            });
           }
        });
+    }
+
+    refreshMod = function(mod) {
+        inst.find(".modtext").text("Modifikator: " + mod);
+    }
+
+    setMod = function(e) {
+        var id = $(e.target).attr("id").split("_")[1];
+        if($(e.item).hasClass("mod")) {
+            var val = $(e.item).text();
+            sendMessage1("==mod_" + id + "_" + val);
+        }
     }
 
     updateUser = function() {

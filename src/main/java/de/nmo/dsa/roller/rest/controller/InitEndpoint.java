@@ -123,7 +123,10 @@ public class InitEndpoint {
         return list();
     }
 
-    private Response list() throws GenericException {
+    @GET
+    @Path("skills")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response list() throws GenericException {
         try {
             List<Skill> users = skillService.all();
             List<SkillListDAO> responses = users.stream().map(SkillListDAO::new)

@@ -42,9 +42,9 @@ public class ChatEndpoint {
     @GET
     @Path("room/{room}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response list(@PathParam("room") String room) throws GenericException {
+    public Response list(@PathParam("room") String room, @QueryParam("page") int page) throws GenericException {
         try {
-            List<ChatMessage> msgs = chatmessageService.getByRoom(room);
+            List<ChatMessage> msgs = chatmessageService.getByRoom(room, page);
             List<ChatMessageListDAO> responses = msgs.stream().map(ChatMessageListDAO::new)
                     .collect(Collectors.toList());
             return Response.status(200)

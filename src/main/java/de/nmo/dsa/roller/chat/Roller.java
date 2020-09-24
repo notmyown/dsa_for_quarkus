@@ -46,6 +46,7 @@ public class Roller {
             return null;
         }
         User user = userEndpoint.getUser(token);
+        long mod = user.getMod();
         if (msg.startsWith("==roll")) {
             String content = msg.split("_")[1];
             String[] parts = content.split("-");
@@ -53,8 +54,8 @@ public class Roller {
                 String attr = parts[1];
                 int rand20 = new Random().nextInt(20) + 1;
                 long val = getAttrValue(user, attr);
-                String retval = "Roll " + attr.toUpperCase() + "(" + val + ") with D20: " + rand20 + (val < rand20 ? " (failed)" : "");
-                return "<span class='username'>" + user.getUsername() + "</span><span class='message dsa_roll_text" + (val < rand20 ? " failed" : "") + "'>" + retval + "</span>";
+                String retval = "Roll " + attr.toUpperCase() + "(" + val + (mod != 0 ? " [Mod:" + mod : "]") + ") with D20: " + rand20 + ((val+mod) < rand20 ? " (failed)" : "");
+                return "<span class='username'>" + user.getUsername() + "</span><span class='message dsa_roll_text" + ((val+mod) < rand20 ? " failed" : "") + "'>" + retval + "</span>";
             } else if (parts[0].equals("skill")) {
                 int id = Integer.parseInt(parts[1]);
                 List<SkillToUser> sus = skillToUserService.allByUser(user);
@@ -67,7 +68,6 @@ public class Roller {
                     String attr = skill.getAttributes();
                     String[] attrs = attr.split("/");
                     String retval = "Roll '" + name + "(" + qsLeft + ")': ";
-                    int mod = 0;
                     for (int i = 0; i < attrs.length; i++) {
                         long val = getAttrValue(user, attrs[i]);
                         int r = new Random().nextInt(20) + 1;
@@ -91,6 +91,21 @@ public class Roller {
             msg = msg.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
             String content = msg.split("::")[1];
             return "<span class='username'>" + user.getUsername() + "</span><span class='message'><img src='" + content + "' /></span>";
+        } else if(msg.startsWith("==mod")) {
+            String[] parts = msg.split("_");
+            if(parts.length == 3) {
+                try {
+                    long userid = Long.parseLong(parts[1]);
+                    long modi = Long.parseLong(parts[2]);
+                    User u = userService.get(userid);
+                    u.setMod(modi);
+                    System.err.println("usermod" +  u.getMod());
+                    userService.update(u.getId(), u);
+                    return "<span class='username'>" + user.getUsername() + "</span><span class='message system'>" + u.getUsername() + " erhält den Modifikator " + modi + "</span>";
+                } catch (Exception e) {
+                    //swallow
+                }
+            }
         } else {
             msg = msg.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
             return "<span class='username'>" + user.getUsername() + "</span><span class='message'>" + msg + "</span>";

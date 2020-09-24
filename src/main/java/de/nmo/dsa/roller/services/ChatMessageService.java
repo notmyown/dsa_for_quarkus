@@ -12,6 +12,8 @@ import java.util.List;
 
 @ApplicationScoped
 public class ChatMessageService implements DataService<ChatMessage> {
+
+	final static int PAGESIZE = 50;
 	
 	@Inject
     private EntityManager entityManager;
@@ -26,9 +28,9 @@ public class ChatMessageService implements DataService<ChatMessage> {
 	}
 
 	@Transactional
-	public List<ChatMessage> getByRoom(String name) {
+	public List<ChatMessage> getByRoom(String name, int page) {
 		try {
-			return entityManager.createNamedQuery(ChatMessage.findByRoom, ChatMessage.class).setParameter("room", name).getResultList();
+			return entityManager.createNamedQuery(ChatMessage.findByRoom, ChatMessage.class).setParameter("room", name).setFirstResult(page*PAGESIZE).setMaxResults(PAGESIZE).getResultList();
 		} catch (NoResultException nre) {
 			System.err.println(nre);
 		} catch (Throwable t) {
