@@ -65,4 +65,14 @@ public class ChatMessageService implements DataService<ChatMessage> {
 		return u;
 	}
 
+	public List<ChatMessage> getByRoomSince(String room, long time) {
+		try {
+			return entityManager.createNamedQuery(ChatMessage.findByRoomSince, ChatMessage.class).setParameter("room", room).setParameter("time", time).getResultList();
+		} catch (NoResultException nre) {
+			System.err.println(nre);
+		} catch (Throwable t) {
+			t.printStackTrace();
+		}
+		return new ArrayList<>();
+	}
 }

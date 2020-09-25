@@ -141,6 +141,9 @@ $.fn.dsa = function() {
                 cats.push(inst.skills[i].category);
             }
         }
+        if (!cats.includes("Eigene")) {
+            cats.push("Eigene");
+        }
         console.log(cats);
         for (var i = 0; i < cats.length; i++) {
             categories += "<span class='skill_subheadline' >" + cats[i] + "</span>";
@@ -153,6 +156,8 @@ $.fn.dsa = function() {
             var e = inst.skills[i];
             out += "<tr class='skill tree_" + e.category + "'><td>" + e.name + ":</td><td><input type='number' id='change_skill_"+e.id+"' value='" + e.value + "' /></td><td>" + e.attributes + "</td><td><img class='skill_dice' id='skill_dice_" + e.id + "' src='d20.png'/></td></tr>";
          }
+
+         out += "<tr class='skill tree_Eigene addline hide'><td colspan=4><span class='newline'><table><tr><td>Name:</td><td><input class='sname'></td></tr><tr><td>Wert:</td><td><input class='sval'></td></tr><tr><td>Attribute:</td><td><input class='sattr'></td></tr><tr><td><span class='submit save'>Speichern</td><td><span class='submit'>Abbrechen</td></tr></table></span><span class='add'>Neues Fähigkeit hinzufügen</span></tr>";
 
          out += "</table></div>";
          out += "<div class='chat'><div>";
@@ -211,16 +216,44 @@ $.fn.dsa = function() {
             updateUser();
         });
         inst.find(".msg .sendbutton").click(function(e){
-                    var val = 20;
-                    val = $(this).attr("class").split(" d")[1];
-                    rollDice(val);
-                });
+        var val = 20;
+           val = $(this).attr("class").split(" d")[1];
+           rollDice(val);
+        });
+        inst.find(".tree_Eigene.addline .add").click(function(){
+            inst.find(".tree_Eigene.addline").addClass("show").removeClass("hide");
+            inst.find(".tree_Eigene .newline input").removeAttr("readonly");
+        });
+
+        inst.find(".tree_Eigene.addline .submit").click(function(){
+                    inst.find(".tree_Eigene.addline").addClass("hide").removeClass("show");
+                    inst.find(".tree_Eigene .newline input").attr("readonly", true);
+        });
+
+        inst.find(".tree_Eigene.addline .submit.save").click(function(){
+            addNewSkill();
+        });
 
         refreshUserList();
         window.setInterval(function() {
             refreshUserList();
         }, 5000);
 
+    }
+
+    addNewSkill =  function() {
+        var name = $(".tree_Eigene .newline .sname").val();
+        var value = $(".tree_Eigene .newline .sval").val();
+        var dices = $(".tree_Eigene .newline .sattr").val();
+         $.ajax({
+              type: "POST",
+              url: '/dsa/user/skill/new/' + inst.token + "?name=" + name + "&value=" + value + "&dices=" + dices,
+              success: function(data) {
+                var tr = "<tr class='skill tree_" + data.category + "'><td>" + data.name + ":</td><td><input type='number' id='change_skill_"+data.id+"' value='" + data.value + "' /></td><td>" + data.attributes + "</td><td><img class='skill_dice' id='skill_dice_" + e.id + "' src='d20.png'/></td></tr>";
+                console.log(tr);
+              }
+
+        });
     }
 
     refreshUserList = function () {
@@ -321,6 +354,71 @@ $.fn.dsa = function() {
         init();
     }
 
+    onConnected = function() {
+        $.ajax({
+          type: "GET",
+          url: '/dsa/chat/room/HavenaChronicles',
+          success: function(data) {
+            var lastuser = "";
+            for (var i = 0; i < data.length; i++) {
+                var msg = data[i].msg;
+                if (msg && msg.includes("<span class='username'>" + lastuser + "</span>")) {
+                    msg = msg.replace("<span class='username'>" + lastuser + "</span>", "");
+                }else {
+                    lastuser = msg.split("</span>")[0].split(">")[1];
+                }
+                $(".messages").append(msg).append("<br/>");
+            }
+            scrollToBottom();
+          }
+       });
+
+       $("#send").attr("disabled", false);
+       $("#msg").keypress(function(event) {
+         if(event.keyCode == 13 || event.which == 13) {
+            sendMessage2();
+         }
+       });
+       $("#send").click(sendMessage2);
+    }
+
+    onNewMessage = function(m) {
+       console.log("Got message: " + m);
+       var msg = "";
+       if (m.data) {
+            msg = m.data;
+       } else {
+            msg = m.msg;
+       }
+
+       var lastname = $(".chat .messages .username").last().text();
+       $(".messages").append(msg + "<br>");
+       $(".chat .messages .username").text();
+       var newname = $(".chat .messages .username").last().text();
+       if (lastname === newname) {
+        $(".chat .messages .username").last().remove();
+       }
+       scrollToBottom();
+       blink.On("New Message");
+    }
+
+    startPolling = function() {
+        window.setInterval(function() {
+            $.ajax({
+              type: "GET",
+              url: '/dsa/chat/room/HavenaChronicles/poll/' + inst.timestamp,
+              success: function(data) {
+                    //inst.timestamp = Date.now();
+                    console.log(data);
+                    for (var i = 0; i < data.length; i++) {
+                        onNewMessage(data[i]);
+                    }
+                    inst.timestamp = Date.now();
+              }
+            });
+        }, 1000)
+    }
+
     connect = function() {
        if (! connected) {
            var name = $("#name").val();
@@ -328,43 +426,17 @@ $.fn.dsa = function() {
            socket = new WebSocket("ws://" + location.host + "/chat/" + inst.user.name);
            socket.onopen = function() {
                connected = true;
-               $.ajax({
-                  type: "GET",
-                  url: '/dsa/chat/room/HavenaChronicles',
-                  success: function(data) {
-                    var lastuser = "";
-                    for (var i = 0; i < data.length; i++) {
-                        var msg = data[i].msg;
-                        if (msg && msg.includes("<span class='username'>" + lastuser + "</span>")) {
-                            msg = msg.replace("<span class='username'>" + lastuser + "</span>", "");
-                        }else {
-                            lastuser = msg.split("</span>")[0].split(">")[1];
-                        }
-                        $(".messages").append(msg).append("<br/>");
-                    }
-                    scrollToBottom();
-                  }
-               });
                console.log("Connected to the web socket");
-               $("#send").attr("disabled", false);
-               $("#msg").keypress(function(event) {
-                 if(event.keyCode == 13 || event.which == 13) {
-                    sendMessage2();
-                 }
-               });
-               $("#send").click(sendMessage2);
+               onConnected();
            };
+           socket.onerror = function(e) {
+                connected = true;
+                onConnected();
+                inst.timestamp = Date.now();
+                startPolling();
+           }
            socket.onmessage =function(m) {
-               console.log("Got message: " + m.data);
-               var lastname = $(".chat .messages .username").last().text();
-               $(".messages").append(m.data + "<br>");
-               $(".chat .messages .username").text();
-               var newname = $(".chat .messages .username").last().text();
-               if (lastname === newname) {
-                $(".chat .messages .username").last().remove();
-               }
-               scrollToBottom();
-               blink.On("New Message");
+               onNewMessage(m);
            };
        }
    };

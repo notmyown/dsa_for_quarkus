@@ -109,7 +109,9 @@ public class UserEndpoint {
 
             List<Skill> skills = skillService.all();
             skills.forEach(skill -> {
-                userService.updateSkill(u, skill.getId(), 0);
+                if (!"Eigene".equals(skill.getCategory())) {
+                    userService.updateSkill(u, skill.getId(), 0);
+                }
             });
 
 
@@ -306,6 +308,50 @@ public class UserEndpoint {
         System.out.println(user);
         userService.update(user.getId(), user);
         return get(token);
+    }
+
+    @POST
+    @Path("skill/new/{token}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response updateAttr(@PathParam("token") String token, @QueryParam("name") String name, @QueryParam("value") long value, @QueryParam("dices") String dices) throws GenericException {
+        User user = getUser(token);
+        //Prüfen ob es den Skill nicht schon gibt
+        List<Skill> skills = skillService.all();
+        Skill skill = null;
+        for(Skill s : skills) {
+            if (name.equals(s.getName())) {
+                skill = s;
+                break;
+            }
+        }
+        //skill anlegen
+        if (skill == null) {
+            skill = new Skill();
+            skill.setCategory("Eigene");
+            skill.setAttributes(dices);
+            skill.setName(name);
+            skillService.create(skill);
+        }
+
+        List<SkillToUser> sus = skillToUserService.allByUser(user);
+        SkillToUser su = null;
+        for (SkillToUser s : sus) {
+            if (s.getSkill() == skill.getId()) {
+                su = s;
+            }
+        }
+        if (su == null) {
+            su = new SkillToUser();
+            su.setSkill(skill.getId());
+            su.setUser(user.getId());
+            su = skillToUserService.create(su);
+        }
+
+        su.setValue(value);
+        skillToUserService.update(su.getId(), su);
+
+        return Response.status(200)
+                .entity(new SkillDataResponse(su, skill)).build();
     }
 
     public User getUser(String token) throws InvalidUserException {

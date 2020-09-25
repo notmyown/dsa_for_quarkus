@@ -14,11 +14,15 @@ import javax.persistence.*;
 @NamedQuery(name = ChatMessage.findByRoom,
 		query = "SELECT u FROM chatmessage u where room = :room ORDER BY time",
 		hints = @QueryHint(name = "org.hibernate.cacheable", value = "true") )
+@NamedQuery(name = ChatMessage.findByRoomSince,
+		query = "SELECT u FROM chatmessage u where room = :room and time > :time ORDER BY time",
+		hints = @QueryHint(name = "org.hibernate.cacheable", value = "true") )
 @Cacheable
 public class ChatMessage {
 
 	public static final String findAll = "ChatMessage.findAll";
 	public static final String findByRoom = "ChatMessage.findByRoom";
+	public static final String findByRoomSince = "ChatMessage.findByRoomSince";
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)

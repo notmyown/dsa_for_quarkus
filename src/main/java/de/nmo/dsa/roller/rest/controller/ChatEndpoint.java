@@ -54,6 +54,21 @@ public class ChatEndpoint {
         }
     }
 
+    @GET
+    @Path("room/{room}/poll/{time}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response list(@PathParam("room") String room, @PathParam("time") long time) throws GenericException {
+        try {
+            List<ChatMessage> msgs = chatmessageService.getByRoomSince(room, time);
+            List<ChatMessageListDAO> responses = msgs.stream().map(ChatMessageListDAO::new)
+                    .collect(Collectors.toList());
+            return Response.status(200)
+                    .entity(responses).build();
+        } catch (Exception e) {
+            throw new GenericException("Error getting User list", e);
+        }
+    }
+
     @POST
     @Path("send")
     @Produces(MediaType.APPLICATION_JSON)

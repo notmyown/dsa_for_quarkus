@@ -75,6 +75,10 @@ TR.skill {
     flex-shrink: 0;
 }
 
+.dsa .chat .messages span {
+    overflow-wrap: break-word;
+}
+
 .dsa .chat .messages .username {
     font-size: 0.8em;
     display:block;
@@ -158,6 +162,28 @@ input.dsa_attr_input:read-only {
     flex-grow: 100;
     flex-shrink: 100;
 }
+
+.tree_Eigene .add, .tree_Eigene .submit{
+     color: yellow;
+     text-decoration: underline;
+     cursor: pointer;
+ }
+
+ .tree_Eigene .add:hover, .tree_Eigene .submit:hover {
+     text-decoration: none;
+ }
+
+.tree_Eigene.show .newline, .tree_Eigene.hide .add {
+    display: inline;
+}
+
+.tree_Eigene.hide .newline, .tree_Eigene.show .add {
+    display: none;
+}
+
+ .tree_Eigene .newline input {
+    width: auto;
+ }
 
 .dsa_color_val TD { font-weight: bold; text-align: center; cursor: pointer; background-color: #fffb001f;}
 .dsa_color_val TD.dsa_mu { color: red;}
