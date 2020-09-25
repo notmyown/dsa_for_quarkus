@@ -237,13 +237,12 @@ $.fn.dsa = function() {
                 if(user.id == inst.user.id && user.mod != inst.user.mod) {
                     refreshMod(user.mod);
                 }
-                var msg = "<span class='user' id='user_" + user.id +"'>" + user.username + "</span>";
+                var mod = inst.user.admin && user.mod != 0 ? " [Mod: " + user.mod + "]" : "";
+                var msg = "<span class='user' id='user_" + user.id +"'>" + user.username + mod + "</span>";
                 if(inst.find("#user_" + user.id).length == 0) {
                     inst.find(".users .userlist").append(msg);
-                    if (inst.user.admin) {
-                        var elem = inst.find("#user_" + user.id);
-
-                    }
+                } else {
+                    inst.find("#user_" + user.id).text(user.username + mod);
                 }
             }
             inst.find(".users .userlist .user").each(function(){
@@ -259,20 +258,22 @@ $.fn.dsa = function() {
                     $(this).remove();
                 }
             });
-            $("#context-menu").kendoContextMenu({
-                target: ".userlist .user",
-                direction: "top",
-                select: function(e) {
-                    console.log("klick" + e);
-                    setMod(e);
-                },
-                open: function() {
-                    inst.contextopen = true;
-                },
-                close: function() {
-                    inst.contextopen = false;
-                }
-            });
+            if (inst.user.admin) {
+                $("#context-menu").kendoContextMenu({
+                    target: ".userlist .user",
+                    direction: "top",
+                    select: function(e) {
+                        console.log("klick" + e);
+                        setMod(e);
+                    },
+                    open: function() {
+                        inst.contextopen = true;
+                    },
+                    close: function() {
+                        inst.contextopen = false;
+                    }
+                });
+            }
           }
        });
     }

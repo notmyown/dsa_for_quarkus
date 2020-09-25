@@ -159,7 +159,7 @@ input.dsa_attr_input:read-only {
     flex-shrink: 100;
 }
 
-.dsa_color_val TD { font-weight: bold; text-align: center; cursor: pointer;}
+.dsa_color_val TD { font-weight: bold; text-align: center; cursor: pointer; background-color: #fffb001f;}
 .dsa_color_val TD.dsa_mu { color: red;}
 .dsa_color_val TD.dsa_kl { color: violet;}
 .dsa_color_val TD.dsa_in { color: green;}
