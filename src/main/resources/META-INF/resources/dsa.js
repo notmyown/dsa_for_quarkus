@@ -406,7 +406,7 @@ $.fn.dsa = function() {
         window.setInterval(function() {
             $.ajax({
               type: "GET",
-              url: '/dsa/chat/room/HavenaChronicles/poll/' + inst.timestamp,
+              url: '/dsa/chat/room/HavenaChronicles/poll/' + inst.timestamp + "/" + inst.token,
               success: function(data) {
                     //inst.timestamp = Date.now();
                     console.log(data);
@@ -423,7 +423,7 @@ $.fn.dsa = function() {
        if (! connected) {
            var name = $("#name").val();
            console.log("Val: " + name);
-           socket = new WebSocket("ws://" + location.host + "/chat/" + inst.user.name);
+           socket = new WebSocket("ws://xyz" + location.host + "/chat/" + inst.user.name);
            socket.onopen = function() {
                connected = true;
                console.log("Connected to the web socket");

@@ -1,5 +1,7 @@
 package de.nmo.dsa.roller.chat;
 
+import de.nmo.dsa.roller.entity.User;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +21,7 @@ import javax.websocket.Session;
 public class ChatSocket {
 
     Map<String, Session> sessions = new ConcurrentHashMap<>();
+    Map<Long, Long> pollinguser = new ConcurrentHashMap<>();
 
     @OnOpen
     public void onOpen(Session session, @PathParam("username") String username) {
@@ -62,4 +65,17 @@ public class ChatSocket {
         return users;
     }
 
+
+
+    public void addPollingUser(User user) {
+        pollinguser.put(user.getId(), System.currentTimeMillis());
+    }
+
+    public void removePollingUser(User user) {
+        pollinguser.remove(user.getId());
+    }
+
+    public Map<Long, Long> getPollinguser() {
+        return pollinguser;
+    }
 }

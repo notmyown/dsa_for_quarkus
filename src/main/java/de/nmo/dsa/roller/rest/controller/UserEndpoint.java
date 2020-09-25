@@ -28,6 +28,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @ApplicationScoped
@@ -88,6 +89,23 @@ public class UserEndpoint {
                     continue;
                 }
             }
+            List<Long> removeIds = new ArrayList<>();
+            for (Map.Entry<Long, Long> entry : chatSocket.getPollinguser().entrySet()) {
+                try {
+                    if (System.currentTimeMillis() -entry.getValue() > 5000 ) {
+                        removeIds.add(entry.getValue());
+                        continue;
+                    }
+                    User u = userService.get(entry.getKey());
+                    if (u != null) {
+                        users.add(new UserListDAO(u));
+                    }
+                } catch (Exception e) {
+                    removeIds.add(entry.getKey());
+                }
+            }
+
+
             return Response.status(200)
                     .entity(users).build();
         } catch (Exception e) {

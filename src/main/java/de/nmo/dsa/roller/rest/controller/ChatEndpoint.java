@@ -55,10 +55,12 @@ public class ChatEndpoint {
     }
 
     @GET
-    @Path("room/{room}/poll/{time}")
+    @Path("room/{room}/poll/{time}/{token}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response list(@PathParam("room") String room, @PathParam("time") long time) throws GenericException {
+    public Response list(@PathParam("room") String room, @PathParam("time") long time, @PathParam("token") String token) throws GenericException {
         try {
+            User user = userEndpoint.getUser(token);
+            chatSocket.addPollingUser(user);
             List<ChatMessage> msgs = chatmessageService.getByRoomSince(room, time);
             List<ChatMessageListDAO> responses = msgs.stream().map(ChatMessageListDAO::new)
                     .collect(Collectors.toList());
