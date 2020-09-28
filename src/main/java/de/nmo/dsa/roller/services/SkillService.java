@@ -50,6 +50,9 @@ public class SkillService implements DataService<Skill> {
 	@Transactional
 	public boolean update(long id, Skill u) {
 		Skill entity = entityManager.find(Skill.class, u.getId());
+		entity.setName(u.getName());
+		entity.setAttributes(u.getAttributes());
+		entity.setCategory(u.getCategory());
 		entityManager.persist(entity);
 		return true;
 	}

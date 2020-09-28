@@ -331,7 +331,7 @@ public class UserEndpoint {
     @POST
     @Path("skill/new/{token}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response updateAttr(@PathParam("token") String token, @QueryParam("name") String name, @QueryParam("value") long value, @QueryParam("dices") String dices) throws GenericException {
+    public Response newSkill(@PathParam("token") String token, @QueryParam("name") String name, @QueryParam("value") long value, @QueryParam("dices") String dices) throws GenericException {
         User user = getUser(token);
         //Prüfen ob es den Skill nicht schon gibt
         List<Skill> skills = skillService.all();
@@ -364,7 +364,7 @@ public class UserEndpoint {
             su.setUser(user.getId());
             su = skillToUserService.create(su);
         }
-
+        System.err.println("--->" + value);
         su.setValue(value);
         skillToUserService.update(su.getId(), su);
 
@@ -379,7 +379,6 @@ public class UserEndpoint {
         }
         User user = userService.get(s.getUser());
         User u = userService.get(s.getUser());
-        System.out.println(userService);
         if (u == null) {
             throw new InvalidUserException("");
         }

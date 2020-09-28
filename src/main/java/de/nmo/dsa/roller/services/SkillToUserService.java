@@ -43,13 +43,17 @@ public class SkillToUserService implements DataService<SkillToUser> {
 	@Transactional
 	public SkillToUser create(SkillToUser u) {
 		entityManager.persist(u);
+		System.err.println(u.getId());
 		return u;
 	}
 
 	@Override
 	@Transactional
 	public boolean update(long id, SkillToUser u) {
-		Skill entity = entityManager.find(Skill.class, u.getId());
+		SkillToUser entity = entityManager.find(SkillToUser.class, u.getId());
+		entity.setUser(u.getUser());
+		entity.setValue(u.getValue());
+		entity.setSkill(u.getSkill());
 		entityManager.persist(entity);
 		return true;
 	}

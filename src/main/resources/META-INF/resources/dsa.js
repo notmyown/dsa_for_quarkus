@@ -249,8 +249,9 @@ $.fn.dsa = function() {
               type: "POST",
               url: '/dsa/user/skill/new/' + inst.token + "?name=" + name + "&value=" + value + "&dices=" + dices,
               success: function(data) {
-                var tr = "<tr class='skill tree_" + data.category + "'><td>" + data.name + ":</td><td><input type='number' id='change_skill_"+data.id+"' value='" + data.value + "' /></td><td>" + data.attributes + "</td><td><img class='skill_dice' id='skill_dice_" + e.id + "' src='d20.png'/></td></tr>";
-                console.log(tr);
+                var tr = "<tr class='skill tree_" + data.category + "' style='display: table-row;'><td>" + data.name + ":</td><td><input type='number' id='change_skill_"+data.id+"' value='" + data.value + "' /></td><td>" + data.attributes + "</td><td><img class='skill_dice' id='skill_dice_" + data.id + "' src='d20.png'/></td></tr>";
+                $(tr).insertBefore(".tree_Eigene.addline");
+                window.location.reload();
               }
 
         });
@@ -423,7 +424,7 @@ $.fn.dsa = function() {
        if (! connected) {
            var name = $("#name").val();
            console.log("Val: " + name);
-           socket = new WebSocket("ws://xyz" + location.host + "/chat/" + inst.user.name);
+           socket = new WebSocket("ws://" + location.host + "/chat/" + inst.user.name);
            socket.onopen = function() {
                connected = true;
                console.log("Connected to the web socket");
