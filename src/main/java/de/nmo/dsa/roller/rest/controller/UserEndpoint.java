@@ -145,10 +145,7 @@ public class UserEndpoint {
     @Produces(MediaType.APPLICATION_JSON)
     public Response login(@QueryParam("name") String name, @QueryParam("password") String password) throws GenericException {
         try {
-            System.out.println("$"+name+"$");
             User u = userService.getByName(name);
-            System.out.println(u);
-            System.out.println(userService);
             if (u != null && u.getPassword() != null && u.getPassword().equals(password)) {
                 //success
                 Session s = sessionService.getByUser(u);
@@ -323,7 +320,6 @@ public class UserEndpoint {
         user.setAttr_ko(u.getAttr_ko());
         user.setAttr_mu(u.getAttr_mu());
         user.setName(u.getName());
-        System.out.println(user);
         userService.update(user.getId(), user);
         return get(token);
     }

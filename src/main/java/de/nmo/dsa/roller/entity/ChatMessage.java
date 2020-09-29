@@ -12,10 +12,10 @@ import javax.persistence.*;
 		query = "SELECT c FROM chatmessage c",
 		hints = @QueryHint(name = "org.hibernate.cacheable", value = "true") )
 @NamedQuery(name = ChatMessage.findByRoom,
-		query = "SELECT u FROM chatmessage u where room = :room ORDER BY time",
+		query = "SELECT u FROM chatmessage u where room = :room ORDER BY time DESC",
 		hints = @QueryHint(name = "org.hibernate.cacheable", value = "true") )
 @NamedQuery(name = ChatMessage.findByRoomSince,
-		query = "SELECT u FROM chatmessage u where room = :room and time > :time ORDER BY time",
+		query = "SELECT u FROM chatmessage u where room = :room and time > :time ORDER BY time DESC",
 		hints = @QueryHint(name = "org.hibernate.cacheable", value = "true") )
 @Cacheable
 public class ChatMessage {

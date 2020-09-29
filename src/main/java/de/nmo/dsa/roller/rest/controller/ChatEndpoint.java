@@ -18,6 +18,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -45,6 +46,7 @@ public class ChatEndpoint {
     public Response list(@PathParam("room") String room, @QueryParam("page") int page) throws GenericException {
         try {
             List<ChatMessage> msgs = chatmessageService.getByRoom(room, page);
+            Collections.reverse(msgs);
             List<ChatMessageListDAO> responses = msgs.stream().map(ChatMessageListDAO::new)
                     .collect(Collectors.toList());
             return Response.status(200)

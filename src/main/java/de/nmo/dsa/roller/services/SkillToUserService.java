@@ -43,7 +43,6 @@ public class SkillToUserService implements DataService<SkillToUser> {
 	@Transactional
 	public SkillToUser create(SkillToUser u) {
 		entityManager.persist(u);
-		System.err.println(u.getId());
 		return u;
 	}
 

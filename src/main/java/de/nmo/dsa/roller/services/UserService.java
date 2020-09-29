@@ -26,11 +26,8 @@ public class UserService implements DataService<User> {
 	}
 
 	public User getByName(String name) {
-		System.out.println("Get User By Name:" + name + " - " + entityManager);
 		try {
 			List<User> us = entityManager.createNamedQuery(User.findByName, User.class).setParameter("id", name).getResultList();
-			System.out.println(us.size());
-			System.out.println();
 			return us.get(0);
 		} catch (NoResultException nre) {
 			System.err.println(nre);
@@ -68,7 +65,6 @@ public class UserService implements DataService<User> {
 		entity.setAttr_in(u.getAttr_in());
 		entity.setAttr_ff(u.getAttr_ff());
 		entity.setAdmin(u.isAdmin());
-		System.err.println(entity.getMod());
 		entity.setMod(u.getMod());
 		entityManager.persist(entity);
 		return true;

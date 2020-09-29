@@ -99,7 +99,6 @@ public class Roller {
                     long modi = Long.parseLong(parts[2]);
                     User u = userService.get(userid);
                     u.setMod(modi);
-                    System.err.println("usermod" +  u.getMod());
                     userService.update(u.getId(), u);
                     return "<span class='username'>" + user.getUsername() + "</span><span class='message system'>" + u.getUsername() + " erhält den Modifikator " + modi + "</span>";
                 } catch (Exception e) {
@@ -115,7 +114,6 @@ public class Roller {
 
     private long getAttrValue(User user, String attr) {
         long val = 0;
-        System.out.println(user + "-" + attr + "-");
         if("mu".equalsIgnoreCase(attr)) {
             val = user.getAttr_mu();
         } else if("kl".equalsIgnoreCase(attr)) {
