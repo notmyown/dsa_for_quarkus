@@ -276,3 +276,11 @@ justify-content: center;
     color: #84601f;
     display: block;
 }
+
+.dsa .messages .timestamp {
+    display: inline-block;
+    float: right;
+    color: #484545;
+    font-size: 0.5em;
+    padding-right: 10px;
+}

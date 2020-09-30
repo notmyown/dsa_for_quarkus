@@ -13,6 +13,8 @@ import de.nmo.dsa.roller.services.UserService;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.control.ActivateRequestContext;
 import javax.inject.Inject;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -55,7 +57,7 @@ public class Roller {
                 int rand20 = new Random().nextInt(20) + 1;
                 long val = getAttrValue(user, attr);
                 String retval = "Roll " + attr.toUpperCase() + "(" + val + (mod != 0 ? " [Mod:" + mod : "]") + ") with D20: " + rand20 + ((val+mod) < rand20 ? " (failed)" : "");
-                return "<span class='username'>" + user.getUsername() + "</span><span class='message dsa_roll_text" + ((val+mod) < rand20 ? " failed" : "") + "'>" + retval + "</span>";
+                return "<span class='username'>" + user.getUsername() + "</span><span class='message dsa_roll_text" + ((val+mod) < rand20 ? " failed" : "") + "'>" + retval + "</span>"+ timeStamp();
             } else if (parts[0].equals("skill")) {
                 int id = Integer.parseInt(parts[1]);
                 List<SkillToUser> sus = skillToUserService.allByUser(user);
@@ -79,18 +81,18 @@ public class Roller {
                     }
                     int qs = getQS(qsLeft);
                     retval += qsLeft >= 0 ? (" -> FP: " + qsLeft + " = QS:" + qs) : " failed";
-                    return "<span class='username'>" + user.getUsername() + "</span><span class='message dsa_roll_text" + (qsLeft >= 0 ? "" : " failed") + "'>" + retval + "</span>";
+                    return "<span class='username'>" + user.getUsername() + "</span><span class='message dsa_roll_text" + (qsLeft >= 0 ? "" : " failed") + "'>" + retval + "</span>"+ timeStamp();
                 }
             } else if (parts[0].equals("d")) {
                 int d = Integer.parseInt(parts[1]);
                 int r = new Random().nextInt(d) + 1;
                 String retval = "Roll D" + d + " : " + r;
-                return "<span class='username'>" + user.getUsername() + "</span><span class='message dsa_roll_text fate d" + d + "'>" + retval + "</span>";
+                return "<span class='username'>" + user.getUsername() + "</span><span class='message dsa_roll_text fate d" + d + "'>" + retval + "</span>"+ timeStamp();
             }
         } else if(msg.startsWith("img::")) {
             msg = msg.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
             String content = msg.split("::")[1];
-            return "<span class='username'>" + user.getUsername() + "</span><span class='message'><img src='" + content + "' /></span>";
+            return "<span class='username'>" + user.getUsername() + "</span><span class='message'><img src='" + content + "' /></span>"+ timeStamp();
         } else if(msg.startsWith("==mod")) {
             String[] parts = msg.split("_");
             if(parts.length == 3) {
@@ -100,16 +102,24 @@ public class Roller {
                     User u = userService.get(userid);
                     u.setMod(modi);
                     userService.update(u.getId(), u);
-                    return "<span class='username'>" + user.getUsername() + "</span><span class='message system'>" + u.getUsername() + " erhält den Modifikator " + modi + "</span>";
+                    return "<span class='username'>" + user.getUsername() + "</span><span class='message system'>" + u.getUsername() + " erhält den Modifikator " + modi + "</span>" + timeStamp();
                 } catch (Exception e) {
                     //swallow
                 }
             }
         } else {
             msg = patchMsg(msg);
-            return "<span class='username'>" + user.getUsername() + "</span><span class='message'>" + msg + "</span>";
+            return "<span class='username'>" + user.getUsername() + "</span><span class='message'>" + msg + "</span>" + timeStamp();
         }
         return null;
+    }
+
+    private String timeStamp() {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy<br>HH:mm");
+
+        String date = simpleDateFormat.format(new Date());
+        String ret = "<span class='timestamp'>" + date + "</span>";
+        return ret;
     }
 
     private String patchMsg(String msg) {
