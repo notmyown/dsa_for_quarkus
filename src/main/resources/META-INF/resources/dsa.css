@@ -79,6 +79,7 @@ TR.skill {
     overflow-wrap: break-word;
     display: block;
     width: 90%;
+    float: left;
 }
 
 .dsa .chat .messages .username {
@@ -279,13 +280,13 @@ justify-content: center;
     display: block;
 }
 
-.dsa .messages .timestamp {
+.dsa .messages .message span.timestamp {
     display: inline-block;
-    float: right;
+    float: right !important;
     color: #484545;
     font-size: 0.5em;
     padding-right: 10px;
     text-align: right;
     line-height: 10px;
-    width: 9% !important;
+    width: 7% !important;
 }
