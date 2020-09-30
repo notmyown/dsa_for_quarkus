@@ -280,7 +280,7 @@ justify-content: center;
     display: block;
 }
 
-.dsa .messages .message span.timestamp {
+.dsa .messages span.timestamp {
     display: inline-block;
     float: right !important;
     color: #484545;
