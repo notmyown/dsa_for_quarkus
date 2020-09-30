@@ -115,10 +115,10 @@ public class Roller {
     }
 
     private String timeStamp() {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy<br>HH:mm");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy - HH:mm");
 
         String date = simpleDateFormat.format(new Date());
-        String ret = "<span class='timestamp'>" + date + "</span>";
+        String ret = "<span class='timestamp'>" + date.replaceAll("-", "<br>") + "</span>";
         return ret;
     }
 

@@ -77,6 +77,8 @@ TR.skill {
 
 .dsa .chat .messages span {
     overflow-wrap: break-word;
+    display: block;
+    width: 90%;
 }
 
 .dsa .chat .messages .username {
@@ -283,4 +285,7 @@ justify-content: center;
     color: #484545;
     font-size: 0.5em;
     padding-right: 10px;
+    text-align: right;
+    line-height: 10px;
+    width: 9% !important;
 }
