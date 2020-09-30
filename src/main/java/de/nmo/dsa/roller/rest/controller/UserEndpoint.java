@@ -27,6 +27,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -219,13 +220,15 @@ public class UserEndpoint {
             List<Skill> allskills = skillService.all();
             allskills.forEach(skill -> {
                 if (!given.contains(skill.getId())) {
-                    System.out.println(skill.getName());
-                    SkillToUser su = new SkillToUser();
-                    su.setUser(u.getId());
-                    su.setSkill(skill.getId());
-                    su.setValue(0);
-                    skillToUserService.create(su);
-                    responses.add(new SkillDataResponse(su, skill));
+                    if (!skill.getCategory().equals("Eigene")) {
+                        //System.out.println("------" + skill.getName());
+                        SkillToUser su = new SkillToUser();
+                        su.setUser(u.getId());
+                        su.setSkill(skill.getId());
+                        su.setValue(0);
+                        skillToUserService.create(su);
+                        responses.add(new SkillDataResponse(su, skill));
+                    }
                 }
             });
 
@@ -324,11 +327,30 @@ public class UserEndpoint {
         return get(token);
     }
 
+    private boolean invalidDices(String dices) {
+        if (dices == null) {
+            return true;
+        }
+        dices = dices.toUpperCase();
+        List<String> valids = Arrays.asList("MU", "KL","IN","CH","FF","GE","KO","KK");
+        for (String dice : dices.split("/")) {
+            if (!valids.contains(dice)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     @POST
     @Path("skill/new/{token}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response newSkill(@PathParam("token") String token, @QueryParam("name") String name, @QueryParam("value") long value, @QueryParam("dices") String dices) throws GenericException {
         User user = getUser(token);
+        if (invalidDices(dices)) {
+            throw new GenericException("Invalid Dice");
+        }
+
         //Prüfen ob es den Skill nicht schon gibt
         List<Skill> skills = skillService.all();
         Skill skill = null;
@@ -342,7 +364,7 @@ public class UserEndpoint {
         if (skill == null) {
             skill = new Skill();
             skill.setCategory("Eigene");
-            skill.setAttributes(dices);
+            skill.setAttributes(dices.toUpperCase());
             skill.setName(name);
             skillService.create(skill);
         }
@@ -360,12 +382,38 @@ public class UserEndpoint {
             su.setUser(user.getId());
             su = skillToUserService.create(su);
         }
-        System.err.println("--->" + value);
+        //System.out.println("--->" + value);
         su.setValue(value);
         skillToUserService.update(su.getId(), su);
 
         return Response.status(200)
                 .entity(new SkillDataResponse(su, skill)).build();
+    }
+
+    @POST
+    @Path("skill/remove/{token}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response removeSkill(@PathParam("token") String token, @QueryParam("id") long id) throws GenericException {
+        User user = getUser(token);
+        List<SkillToUser> sus = skillToUserService.allByUser(user);
+        SkillToUser su = null;
+        for(SkillToUser s : sus) {
+            //System.out.println("getSkill#: " + s.getSkill());
+            if (s.getSkill() == id) {
+                //System.out.println("Match:" + s.getSkill());
+                su = s;
+                break;
+            }
+        }
+        if (su != null) {
+            //System.out.println("Su not null" +  su);
+            skillToUserService.delete(su);
+            return Response.status(200)
+                    .entity(su.getSkill()).build();
+        }
+
+        return Response.status(200)
+                .entity(-1).build();
     }
 
     public User getUser(String token) throws InvalidUserException {

@@ -42,6 +42,7 @@ public class SkillToUserService implements DataService<SkillToUser> {
 	@Override
 	@Transactional
 	public SkillToUser create(SkillToUser u) {
+		//System.out.println("Help i got created");
 		entityManager.persist(u);
 		return u;
 	}
@@ -60,7 +61,10 @@ public class SkillToUserService implements DataService<SkillToUser> {
 	@Override
 	@Transactional
 	public SkillToUser delete(SkillToUser u) {
-		entityManager.remove(u);
+		//System.out.println("Delete: " + u.getId());
+		SkillToUser entity = entityManager.find(SkillToUser.class, u.getId());
+		//System.out.println("---: " + entity);
+		entityManager.remove(entity);
 		return u;
 	}
 

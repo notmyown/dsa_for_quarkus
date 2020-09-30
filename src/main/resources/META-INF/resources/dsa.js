@@ -154,7 +154,7 @@ $.fn.dsa = function() {
 
          for(var i = 0; i < inst.skills.length; i++) {
             var e = inst.skills[i];
-            out += "<tr class='skill tree_" + e.category + "'><td>" + e.name + ":</td><td><input type='number' id='change_skill_"+e.id+"' value='" + e.value + "' /></td><td>" + e.attributes + "</td><td><img class='skill_dice' id='skill_dice_" + e.id + "' src='d20.png'/></td></tr>";
+            out += "<tr class='skill tree_" + e.category + "'><td>" + e.name + ":</td><td><input type='number' id='change_skill_"+e.id+"' value='" + e.value + "' /></td><td>" + e.attributes + "</td><td><img class='skill_dice' id='skill_dice_" + e.id + "' src='d20.png'/>" + (e.category=="Eigene" ? "<img class='skill_dice_delete' id='skill_dice_delete_" + e.id + "' src='del.png'/>" : "") + "</td></tr>";
          }
 
          out += "<tr class='skill tree_Eigene addline hide'><td colspan=4><span class='newline'><table><tr><td>Name:</td><td><input class='sname'></td></tr><tr><td>Wert:</td><td><input class='sval'></td></tr><tr><td>Attribute:</td><td><input class='sattr'></td></tr><tr><td><span class='submit save'>Speichern</td><td><span class='submit'>Abbrechen</td></tr></table></span><span class='add'>Neues Fähigkeit hinzufügen</span></tr>";
@@ -187,6 +187,10 @@ $.fn.dsa = function() {
         inst.find(".skill_dice").click(function() {
             var id = $(this).attr("id").split("_")[2];
             sendMessage1("==roll_skill-" + id);
+        });
+        inst.find(".skill_dice_delete").click(function() {
+            var id = $(this).attr("id").split("_")[3];
+            removeCustomSkill(id);
         });
         inst.find(".logout").click(function() {
             window.sessionStorage.setItem("dsa_token", "");
@@ -241,6 +245,18 @@ $.fn.dsa = function() {
 
     }
 
+    removeCustomSkill = function(id) {
+        $.ajax({
+              type: "POST",
+              url: '/dsa/user/skill/remove/' + inst.token + "?id=" + id,
+              success: function(data) {
+                var id = "#skill_dice_delete_" + data;
+                $(id).closest("tr").remove();
+                //window.location.reload();
+              }
+        });
+    }
+
     addNewSkill =  function() {
         var name = $(".tree_Eigene .newline .sname").val();
         var value = $(".tree_Eigene .newline .sval").val();
@@ -249,7 +265,7 @@ $.fn.dsa = function() {
               type: "POST",
               url: '/dsa/user/skill/new/' + inst.token + "?name=" + name + "&value=" + value + "&dices=" + dices,
               success: function(data) {
-                var tr = "<tr class='skill tree_" + data.category + "' style='display: table-row;'><td>" + data.name + ":</td><td><input type='number' id='change_skill_"+data.id+"' value='" + data.value + "' /></td><td>" + data.attributes + "</td><td><img class='skill_dice' id='skill_dice_" + data.id + "' src='d20.png'/></td></tr>";
+                var tr = "<tr class='skill tree_" + data.category + "' style='display: table-row;'><td>" + data.name + ":</td><td><input type='number' id='change_skill_"+data.id+"' value='" + data.value + "' /></td><td>" + data.attributes + "</td><td><img class='skill_dice' id='skill_dice_" + data.id + "' src='d20.png'/><img class='skill_dice_delete' id='skill_dice_delete_" + data.id + "' src='del.png'/></td></tr>";
                 $(tr).insertBefore(".tree_Eigene.addline");
                 window.location.reload();
               }

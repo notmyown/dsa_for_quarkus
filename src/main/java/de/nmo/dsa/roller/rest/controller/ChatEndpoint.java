@@ -57,6 +57,25 @@ public class ChatEndpoint {
     }
 
     @GET
+    @Path("room/{room}/clear")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response clear(@PathParam("room") String room, @QueryParam("token") String token) throws GenericException {
+        try {
+            User user = userEndpoint.getUser(token);
+            if(user.isAdmin()) {
+                List<ChatMessage> msgs = chatmessageService.getByRoom(room);
+                msgs.forEach(cm -> {
+                    chatmessageService.delete(cm);
+                });
+            }
+            return Response.status(200)
+                    .entity("").build();
+        } catch (Exception e) {
+            throw new GenericException("Error getting Chat list", e);
+        }
+    }
+
+    @GET
     @Path("room/{room}/poll/{time}/{token}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response list(@PathParam("room") String room, @PathParam("time") long time, @PathParam("token") String token) throws GenericException {
@@ -78,15 +97,17 @@ public class ChatEndpoint {
     @Produces(MediaType.APPLICATION_JSON)
     public Response send(@QueryParam("token") String token, @QueryParam("msg") String msg) throws GenericException {
         try {
-            User user = userEndpoint.getUser(token);
-            String message = roller.getMessage(msg, token);
-            ChatMessage cm = new ChatMessage();
-            cm.setMessage(message);
-            cm.setRoom("HavenaChronicles");
-            cm.setTime(System.currentTimeMillis());
-            System.out.println(cm);
-            chatmessageService.create(cm);
-            chatSocket.onMessage(message, user.getName());
+            if (msg != null && msg.trim().length() > 0) {
+                User user = userEndpoint.getUser(token);
+                String message = roller.getMessage(msg, token);
+                ChatMessage cm = new ChatMessage();
+                cm.setMessage(message);
+                cm.setRoom("HavenaChronicles");
+                cm.setTime(System.currentTimeMillis());
+                //System.out.println(cm);
+                chatmessageService.create(cm);
+                chatSocket.onMessage(message, user.getName());
+            }
             return Response.status(200)
                     .entity("").build();
         } catch (Exception e) {

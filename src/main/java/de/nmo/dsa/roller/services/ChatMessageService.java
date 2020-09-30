@@ -39,6 +39,17 @@ public class ChatMessageService implements DataService<ChatMessage> {
 		return new ArrayList<>();
 	}
 
+	public List<ChatMessage> getByRoom(String name) {
+		try {
+			return entityManager.createNamedQuery(ChatMessage.findByRoom, ChatMessage.class).setParameter("room", name).getResultList();
+		} catch (NoResultException nre) {
+			System.err.println(nre);
+		} catch (Throwable t) {
+			t.printStackTrace();
+		}
+		return new ArrayList<>();
+	}
+
 	@Override
 	public List<ChatMessage> all() {
 		return entityManager.createNamedQuery(ChatMessage.findAll, ChatMessage.class)
@@ -61,7 +72,8 @@ public class ChatMessageService implements DataService<ChatMessage> {
 	@Override
 	@Transactional
 	public ChatMessage delete(ChatMessage u) {
-		entityManager.remove(u);
+		ChatMessage cm = entityManager.find(ChatMessage.class, u.getId());
+		entityManager.remove(cm);
 		return u;
 	}
 
@@ -75,4 +87,5 @@ public class ChatMessageService implements DataService<ChatMessage> {
 		}
 		return new ArrayList<>();
 	}
+
 }

@@ -106,10 +106,17 @@ public class Roller {
                 }
             }
         } else {
-            msg = msg.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+            msg = patchMsg(msg);
             return "<span class='username'>" + user.getUsername() + "</span><span class='message'>" + msg + "</span>";
         }
         return null;
+    }
+
+    private String patchMsg(String msg) {
+        String ret = msg.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+        ret =  ret.replaceAll("\\[c=#([0-9A-F]*)\\]([^\\[\\/c\\]]*)\\[\\/c\\]", "<span style='color:#$1;'>$2</span>");
+        ret =  ret.replaceAll("\\[a=#([^\\]]*)\\]([^\\[\\/a\\]]*)\\[\\/a\\]", "<a href='$1' target='_blank'>$2</a>");
+        return ret;
     }
 
     private long getAttrValue(User user, String attr) {
