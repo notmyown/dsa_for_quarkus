@@ -481,4 +481,6 @@ $.fn.dsa = function() {
       };
 
     init();
+
+    return inst;
 }

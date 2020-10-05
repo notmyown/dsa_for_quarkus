@@ -66,7 +66,12 @@ public class ChatMessageService implements DataService<ChatMessage> {
 	@Override
 	@Transactional
 	public boolean update(long id, ChatMessage u) {
-		return false;
+		ChatMessage cm = entityManager.find(ChatMessage.class, u.getId());
+		cm.setMessage(u.getMessage());
+		cm.setRoom(u.getRoom());
+		cm.setTime(u.getTime());
+		entityManager.persist(cm);
+		return true;
 	}
 
 	@Override

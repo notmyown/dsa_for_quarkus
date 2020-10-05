@@ -124,8 +124,9 @@ public class Roller {
 
     private String patchMsg(String msg) {
         String ret = msg.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
-        ret =  ret.replaceAll("\\[c=#([0-9A-F]*)\\]([^\\[\\/c\\]]*)\\[\\/c\\]", "<span style='color:#$1;'>$2</span>");
-        ret =  ret.replaceAll("\\[a=#([^\\]]*)\\]([^\\[\\/a\\]]*)\\[\\/a\\]", "<a href='$1' target='_blank'>$2</a>");
+        ret =  ret.replaceAll("\\[c=#([0-9A-Fa-f]*)\\]([^\\[][^\\/][^c][^\\]]*)\\[\\/c\\]", "<span style='color:#$1;'>$2</span>");
+
+        ret =  ret.replaceAll("\\[a=#([^\\]]*)\\]([^\\[][^\\/][^a][^\\]]*)\\[\\/a\\]", "<a href='$1' target='_blank'>$2</a>");
         return ret;
     }
 

@@ -82,6 +82,13 @@ TR.skill {
     float: left;
 }
 
+.dsa .chat .messages .message span {
+    width: auto;
+    margin-right: 5px;
+    float: none;
+    display: inline-block;
+}
+
 .dsa .chat .messages .username {
     font-size: 0.8em;
     display:block;

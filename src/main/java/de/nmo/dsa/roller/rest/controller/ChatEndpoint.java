@@ -100,13 +100,38 @@ public class ChatEndpoint {
             if (msg != null && msg.trim().length() > 0) {
                 User user = userEndpoint.getUser(token);
                 String message = roller.getMessage(msg, token);
+                if (message == null) {
+                    throw new GenericException("Error getting ChatMessage");
+                }
                 ChatMessage cm = new ChatMessage();
+                chatmessageService.create(cm);
+
+                message = message.replaceFirst("class='message", "id='msg_" + cm.getId() + "' class='message");
                 cm.setMessage(message);
                 cm.setRoom("HavenaChronicles");
                 cm.setTime(System.currentTimeMillis());
-                //System.out.println(cm);
-                chatmessageService.create(cm);
+                chatmessageService.update(cm.getId(), cm);
+
                 chatSocket.onMessage(message, user.getName());
+            }
+            return Response.status(200)
+                    .entity("").build();
+        } catch (Exception e) {
+            throw new GenericException("Error sending: " + e.getMessage(), e);
+        }
+    }
+
+    @POST
+    @Path("delete")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response delete(@QueryParam("token") String token, @QueryParam("msg") long msg) throws GenericException {
+        try {
+            User user = userEndpoint.getUser(token);
+            if (user.isAdmin()) {
+                ChatMessage cm = chatmessageService.get(msg);
+                if (cm != null) {
+                    chatmessageService.delete(cm);
+                }
             }
             return Response.status(200)
                     .entity("").build();
