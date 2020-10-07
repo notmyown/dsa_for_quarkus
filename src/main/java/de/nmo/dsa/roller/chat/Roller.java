@@ -88,6 +88,8 @@ public class Roller {
                 int r = new Random().nextInt(d) + 1;
                 String retval = "Roll D" + d + " : " + r;
                 return "<span class='username'>" + user.getUsername() + "</span><span class='message dsa_roll_text fate d" + d + "'>" + retval + "</span>"+ timeStamp();
+            } else if (parts[0].equals("probe")) {
+                return "<span class='username'>" + user.getUsername() + "</span><span class='message dsa_roll_text probe'>Probe auf " +  parts[1] +  "</span>"+ timeStamp();
             }
         } else if(msg.startsWith("img::")) {
             msg = msg.replaceAll("<", "&lt;").replaceAll(">", "&gt;");

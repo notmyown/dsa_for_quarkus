@@ -222,6 +222,7 @@ input.dsa_attr_input:read-only {
 .dsa_roll_text.failed {color: red;}
 .dsa_roll_text {color: green;}
 .dsa_roll_text.fate {color: #84601f;}
+.dsa_roll_text.probe {color: #9500aa;}
 .dsa_roll_text.d6::before { content: url(d6.png); }
 .dsa_attributes TD INPUT.custom_skill_name, .dsa_attributes TD INPUT.custom_skill_attr {width: auto;}
 .dsa_roll_text::before { content: url(d20.png); vertical-align: -33%; padding-right: 5px;}

@@ -22,7 +22,7 @@ dependencies {
     implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
     implementation 'io.quarkus:quarkus-resteasy'
     implementation 'org.jboss.resteasy:resteasy-multipart-provider'
-    implementation 'io.quarkus:quarkus-undertow-websockets'
+    implementation group: 'javax.websocket', name: 'javax.websocket-api', version: '1.1'
 
     testImplementation 'io.quarkus:quarkus-junit5'
     testImplementation 'io.rest-assured:rest-assured'
